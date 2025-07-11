@@ -50,11 +50,13 @@ export async function authExpressMiddleware(
   if (refreshResults.success) {
     const { accessToken, data } = refreshResults.data;
 
-    res.cookie("accessToken", accessToken, {
-      httpOnly: true,
-      sameSite: "lax",
-      secure: process.env.NODE_ENV === "production",
-    });
+res.cookie("accessToken", accessToken, {
+  httpOnly: true,
+  sameSite: "none",
+  secure: true,
+  domain: ".onrender.com", // Опционально, но рекомендовано
+});
+
 
     req.userId = data.userId;
   }

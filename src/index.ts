@@ -15,15 +15,22 @@ import { tsoaErrorHandler } from "./utils/tsoa-response-error";
 
 const app = express();
 
+// ✅ CORS for /trpc requests
 app.use(
   "/trpc",
-  cors({ origin: process.env.CORS_ORIGIN.split(","), credentials: true })
+  cors({
+    origin: process.env.CORS_ORIGIN.split(","),
+    credentials: true,
+  })
 );
 
-const allCors = cors({ origin: "*" });
-const urlencoded = express.urlencoded({
-  extended: true,
+// ✅ General CORS for other routes (not /trpc)
+const allCors = cors({
+  origin: process.env.CORS_ORIGIN.split(","),
+  credentials: true,
 });
+
+const urlencoded = express.urlencoded({ extended: true });
 const json = express.json();
 
 app.use((req, res, next) => {
@@ -35,10 +42,13 @@ app.use((req, res, next) => {
   });
 });
 
+// ✅ Parse cookies from requests
 app.use(cookieParser());
 
+// ✅ Attach userId to req from accessToken or refreshToken
 app.use(authExpressMiddleware);
 
+// ✅ tRPC middleware
 app.use(
   "/trpc",
   trpcExpress.createExpressMiddleware({
@@ -59,12 +69,16 @@ app.use(
   })
 );
 
+// ✅ Background cron
 setupRateLimitReplenishCron();
 
+// ✅ OpenAPI routes
 RegisterRoutes(app);
 
+// ✅ Error handler
 app.use(tsoaErrorHandler);
 
+// ✅ Start the server
 app.listen(process.env.PORT, () => {
   console.log(`\n📄 Server ready on port ${process.env.PORT}\n`);
 });

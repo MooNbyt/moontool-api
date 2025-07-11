@@ -85,20 +85,20 @@ export const authRouter = router({
           input.marketingEmails
         );
 
-      ctx.res.cookie("refreshToken", refreshToken, {
-        httpOnly: true,
-        sameSite: "lax",
-        secure: process.env.NODE_ENV === "production",
-      });
+ctx.res.cookie("refreshToken", refreshToken, {
+  httpOnly: true,
+  sameSite: "none",
+  secure: true,
+  domain: ".onrender.com",
+});
 
-      ctx.res.cookie("accessToken", accessToken, {
-        httpOnly: true,
-        sameSite: "lax",
-        secure: process.env.NODE_ENV === "production",
-      });
+ctx.res.cookie("accessToken", accessToken, {
+  httpOnly: true,
+  sameSite: "none",
+  secure: true,
+  domain: ".onrender.com",
+});
 
-      return { userId: userIdToHex(userId), email };
-    }),
 
   verifyEmail: publicProcedure
     .input(
