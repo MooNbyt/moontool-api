@@ -29,14 +29,16 @@ export const authRouter = router({
 
       ctx.res.cookie("refreshToken", refreshToken, {
         httpOnly: true,
-        sameSite: "lax",
-        secure: process.env.NODE_ENV === "production",
+        sameSite: "none",
+        secure: true,
+        domain: ".onrender.com",
       });
 
       ctx.res.cookie("accessToken", accessToken, {
         httpOnly: true,
-        sameSite: "lax",
-        secure: process.env.NODE_ENV === "production",
+        sameSite: "none",
+        secure: true,
+        domain: ".onrender.com",
       });
 
       return { userId: userIdToHex(userId) };
@@ -85,20 +87,22 @@ export const authRouter = router({
           input.marketingEmails
         );
 
-ctx.res.cookie("refreshToken", refreshToken, {
-  httpOnly: true,
-  sameSite: "none",
-  secure: true,
-  domain: ".onrender.com",
-});
+      ctx.res.cookie("refreshToken", refreshToken, {
+        httpOnly: true,
+        sameSite: "none",
+        secure: true,
+        domain: ".onrender.com",
+      });
 
-ctx.res.cookie("accessToken", accessToken, {
-  httpOnly: true,
-  sameSite: "none",
-  secure: true,
-  domain: ".onrender.com",
-});
+      ctx.res.cookie("accessToken", accessToken, {
+        httpOnly: true,
+        sameSite: "none",
+        secure: true,
+        domain: ".onrender.com",
+      });
 
+      return { userId: userIdToHex(userId), email };
+    }),
 
   verifyEmail: publicProcedure
     .input(
@@ -111,7 +115,6 @@ ctx.res.cookie("accessToken", accessToken, {
       await verifyMailToken(input.token, input.email);
     }),
 
-  // TODO: add google recaptcha check for public reset requests
   requestPasswordReset: publicProcedure
     .input(
       z.object({
@@ -133,7 +136,7 @@ ctx.res.cookie("accessToken", accessToken, {
 
       if (user) {
         await requestPasswordReset(input.email);
-      } // We don't want to leak if a user exists or not
+      }
     }),
 
   requestPasswordResetNoCaptcha: protectedProcedure
